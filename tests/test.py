@@ -23,4 +23,4 @@ autoclust = Autoclust(nodes)
 autoclust.hide_long_and_short_edges()
 nodes = autoclust.predict_clusters()
 
-Painter.draw_points_by_prediction(nodes)
+Painter.draw_points_by_prediction_with_edges(nodes)

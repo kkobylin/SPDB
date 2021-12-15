@@ -8,9 +8,10 @@ class Autoclust:
         self.nodes = nodes
         self.coordinates = AlgorithmUtils.convert_nodes_to_array_of_coordinates(nodes)
         self.mean_std_dev = 0
-        self.short_edges = set()
-        self.long_edges = set()
-        self.other_edges = set()
+        # self.short_edges = set()
+        # self.long_edges = set()
+        # self.other_edges = set()
+        self.all_edges = set()
         self.cluster_strength = dict()
 
     def get_edges_from_triangulation(self):
@@ -20,9 +21,13 @@ class Autoclust:
             point1 = self.nodes[triangle[0]]
             point2 = self.nodes[triangle[1]]
             point3 = self.nodes[triangle[2]]
-            point1.edges.update([Edge(point2), Edge(point3)])
-            point2.edges.update([Edge(point1), Edge(point3)])
-            point3.edges.update([Edge(point1), Edge(point2)])
+            edge12 = Edge(point1, point2)
+            edge13 = Edge(point1, point3)
+            edge23 = Edge(point2, point3)
+            point1.edges.update([edge12, edge13])
+            point2.edges.update([edge12, edge23])
+            point3.edges.update([edge13, edge23])
+            self.all_edges.update([edge12, edge13, edge23])
 
         return self.nodes
 
@@ -41,9 +46,10 @@ class Autoclust:
     def split_edges(self):
         for node in self.nodes:
             node.split_edges(self.mean_std_dev)
-            self.short_edges.update(node.short_edges)
-            self.long_edges.update(node.long_edges)
-            self.other_edges.update(node.other_edges)
+            # self.short_edges.update(node.short_edges)
+            # self.long_edges.update(node.long_edges)
+            # self.other_edges.update(node.other_edges)
+            # self.all_edges.update(node.edges)
 
         return self.nodes
 
@@ -52,7 +58,7 @@ class Autoclust:
             node.hide_long_and_short_edges()
 
     def predict_clusters(self):
-        cluster_nr = 0
+        cluster_nr = 1
         for node in self.nodes:
             if node.prediction is None:
                 node.prediction = cluster_nr
@@ -70,10 +76,24 @@ class Autoclust:
         else:
             self.cluster_strength[prediction] += 1
 
-    def restore_short_edges(self):
+    def restore_short_edges_and_predict(self):
         for node in self.nodes:
             if len(node.short_edges) != 0:
-                node.restore_short_edges(self.cluster_strength)
+                node.restore_short_edges_and_predict(self.cluster_strength)
+
+        return self.nodes
+
+    def detect_second_order_inconsistency(self):
+        for node in self.nodes:
+            node.detect_second_order_inconsistency(self.mean_std_dev)
+
+    def repredict_clusters(self):
+        for node in self.nodes:
+            node.prediction = None
+
+        self.predict_clusters()
+
+        return self.nodes
 
 
 
