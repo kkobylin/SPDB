@@ -1,6 +1,7 @@
 from scipy.spatial import Delaunay
 import AlgorithmUtils
 from Edge import Edge
+import Painter
 
 
 class Autoclust:
@@ -65,6 +66,8 @@ class Autoclust:
                 node.prediction = cluster_nr
                 cluster_nr += 1
                 node.propagate_prediction()
+
+        for node in self.nodes:
             self.add_one_to_cluster_strength(node.prediction)
 
         return self.nodes

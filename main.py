@@ -5,7 +5,7 @@ import Autoclust
 
 paint = True
 save_fig = True
-source = "R15.txt"
+source = "3MC.csv"
 
 if __name__ == '__main__':
     Painter.save_fig = save_fig
@@ -20,7 +20,7 @@ if __name__ == '__main__':
         node_id += 1
     if paint:
         filename = source[0:-4] + "_labels"
-        Painter.draw_points_by_label(nodes, cluster_strength=None, filename=filename)
+        # Painter.draw_points_by_label(nodes, cluster_strength=None, filename=filename)
 
     autoclust = Autoclust.Autoclust(nodes)
     print("Triangulacja")
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     if paint:
         print("Rysowanie")
         filename = source[0:-4] + "_triangulation"
-        Painter.draw_nodes_with_edges(nodes, autoclust.all_edges, cluster_strength=None, filename=filename)
+        # Painter.draw_nodes_with_edges(nodes, autoclust.all_edges, cluster_strength=None, filename=filename)
 
     print("Statystyki")
     autoclust.calculate_statistics()

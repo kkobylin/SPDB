@@ -14,13 +14,9 @@ class Edge:
 
     def hide_edge(self):
         self.visible = False
-        # corresponding_edge = [edge for edge in self.node.edges if edge.node.x == x and edge.node.y == y]
-        # corresponding_edge[0].visible = False
 
     def restore_edge(self):
         self.visible = True
-        # corresponding_edge = [edge for edge in self.node.edges if edge.node.x == x and edge.node.y == y]
-        # corresponding_edge[0].visible = True
 
     def find_other_node(self, node: Node) -> Node:
         if node == self.node1:

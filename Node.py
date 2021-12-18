@@ -85,17 +85,18 @@ class Node:
         self.prediction = best_prediction
         cluster_strength[self.prediction] += 1
 
-        for edge in set.union(self.short_edges, self.other_edges):
+        for edge in self.edges:
             other_node = edge.find_other_node(self)
-            if other_node.prediction == best_prediction:
+            if other_node.prediction == best_prediction and edge not in self.long_edges:
                 edge.restore_edge()
             else:
                 edge.hide_edge()
 
     def detect_second_order_inconsistency(self, mean_st_dev):
         second_order_edges = set()
-        second_order_edges.update(edge for edge in self.edges if edge.visible)
-        for edge in self.edges:
+        visible_edges = (edge for edge in self.edges if edge.visible)
+        second_order_edges.update(visible_edges)
+        for edge in visible_edges:
             other_node = edge.find_other_node(self)
             second_order_edges.update(edge for edge in other_node.edges if edge.visible)
 
@@ -103,7 +104,7 @@ class Node:
         for edge in second_order_edges:
             self.second_order_local_mean += edge.calculate_length() / number_of_edges
 
-        for edge in self.edges:
+        for edge in visible_edges:
             if edge.calculate_length() > self.second_order_local_mean + mean_st_dev:
                 edge.hide_edge()
 
