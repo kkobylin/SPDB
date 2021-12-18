@@ -8,30 +8,35 @@ class Autoclust:
         self.nodes = nodes
         self.coordinates = AlgorithmUtils.convert_nodes_to_array_of_coordinates(nodes)
         self.mean_std_dev = 0
-        # self.short_edges = set()
-        # self.long_edges = set()
-        # self.other_edges = set()
         self.all_edges = set()
         self.cluster_strength = dict()
 
     def get_edges_from_triangulation(self):
         tri_result = Delaunay(self.coordinates)
         triangles = tri_result.simplices
+        edge_id = 0
         for triangle in triangles:
             point1 = self.nodes[triangle[0]]
             point2 = self.nodes[triangle[1]]
             point3 = self.nodes[triangle[2]]
-            edge12 = Edge(point1, point2)
-            edge13 = Edge(point1, point3)
-            edge23 = Edge(point2, point3)
+            edge12 = Edge(edge_id, point1, point2)
+            edge13 = Edge(edge_id + 1, point1, point3)
+            edge23 = Edge(edge_id + 2, point2, point3)
             point1.edges.update([edge12, edge13])
             point2.edges.update([edge12, edge23])
             point3.edges.update([edge13, edge23])
             self.all_edges.update([edge12, edge13, edge23])
+            edge_id += 3
 
         return self.nodes
 
+    def remove_nodes_without_edges(self):
+        for node in self.nodes:
+            if len(node.edges) == 0:
+                self.nodes.remove(node)
+
     def calculate_statistics(self):
+        self.remove_nodes_without_edges()
         sum_local_st_dev = 0
         for node in self.nodes:
             node.calculate_local_statistics()
@@ -46,10 +51,6 @@ class Autoclust:
     def split_edges(self):
         for node in self.nodes:
             node.split_edges(self.mean_std_dev)
-            # self.short_edges.update(node.short_edges)
-            # self.long_edges.update(node.long_edges)
-            # self.other_edges.update(node.other_edges)
-            # self.all_edges.update(node.edges)
 
         return self.nodes
 
@@ -90,6 +91,7 @@ class Autoclust:
     def repredict_clusters(self):
         for node in self.nodes:
             node.prediction = None
+        self.cluster_strength = dict()
 
         self.predict_clusters()
 

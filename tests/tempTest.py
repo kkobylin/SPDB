@@ -1,16 +1,5 @@
-dict = {
-  "a": 1,
-  "b": 2,
-  "c": 3
-}
+import matplotlib.pyplot as plt
 
 
-
-nr = dict.get("c")
-
-if nr is None:
-    dict["c"] = 1
-else:
-    dict["c"] += 1
-
-print(dict)
+str_ = "aa.txt"
+print(str_[0:-4])

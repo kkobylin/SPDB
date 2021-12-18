@@ -2,7 +2,8 @@ import math
 
 
 class Node:
-    def __init__(self, x, y, label):
+    def __init__(self, id, x, y, label):
+        self.id = id
         self.x = x
         self.y = y
         self.label = label
@@ -58,15 +59,16 @@ class Node:
         for edge in self.short_edges:
             other_node = edge.find_other_node(self)
             pred = other_node.prediction
-            if pred not in biggest_cluster_prediction and cluster_strength.get(pred) > biggest_cluster_strength:
+            stre = cluster_strength.get(pred)
+            if pred not in biggest_cluster_prediction and stre > biggest_cluster_strength and stre > 1:
                 biggest_cluster_prediction = [pred]
                 biggest_cluster_strength = cluster_strength.get(pred)
-            elif pred not in biggest_cluster_prediction and cluster_strength.get(pred) == biggest_cluster_strength:
+            elif pred not in biggest_cluster_prediction and stre == biggest_cluster_strength and stre > 1:
                 biggest_cluster_prediction.append(pred)
 
         # If two or more equal cluster, find the shortest path
         shortest_length = None
-        best_prediction = -1
+        best_prediction = self.prediction
         if len(biggest_cluster_prediction) > 1:
             for edge in self.short_edges:
                 other_node = edge.find_other_node(self)
@@ -76,7 +78,7 @@ class Node:
                     best_prediction = pred
                     shortest_length = length
         else:
-            best_prediction = biggest_cluster_prediction[0]
+            best_prediction = best_prediction if biggest_cluster_prediction[0] == -1 else biggest_cluster_prediction[0]
 
         # Restore edges to best cluster
         cluster_strength[self.prediction] -= 1
@@ -92,10 +94,10 @@ class Node:
 
     def detect_second_order_inconsistency(self, mean_st_dev):
         second_order_edges = set()
-        second_order_edges.update(self.edges)
+        second_order_edges.update(edge for edge in self.edges if edge.visible)
         for edge in self.edges:
             other_node = edge.find_other_node(self)
-            second_order_edges.update(other_node.edges)
+            second_order_edges.update(edge for edge in other_node.edges if edge.visible)
 
         number_of_edges = len(second_order_edges)
         for edge in second_order_edges:

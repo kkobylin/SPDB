@@ -8,3 +8,11 @@ def read_tsv(path):
     data = list(tsv_reader)
 
     return data
+
+
+def read_csv(path):
+    csv_file = open(path)
+    csv_reader = csv.reader(csv_file, quoting=csv.QUOTE_NONNUMERIC)
+    data = list(csv_reader)
+
+    return data

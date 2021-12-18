@@ -1,10 +1,35 @@
 import unittest
+import random
+from statistics import mean
+
+from numpy import std
 
 from Edge import Edge
 from Node import Node
 
 
 class NodeTest(unittest.TestCase):
+    def test_calculate_statistics(self):
+        random_list = random.sample(range(1, 100), 5)
+        mean_ = mean(random_list)
+        std_ = std(random_list)
+        node0 = Node(id=0, x=0, y=0, label=-1)
+        node1 = Node(id=0, x=random_list[0], y=0, label=-1)
+        node2 = Node(id=0, x=random_list[1], y=0, label=-1)
+        node3 = Node(id=0, x=random_list[2], y=0, label=-1)
+        node4 = Node(id=0, x=random_list[3], y=0, label=-1)
+        node5 = Node(id=0, x=random_list[4], y=0, label=-1)
+
+        node0.edges.update([Edge(0, node0, node1),
+                            Edge(0, node0, node2),
+                            Edge(0, node0, node3),
+                            Edge(0, node0, node4),
+                            Edge(0, node0, node5)])
+        node0.calculate_local_statistics()
+
+        self.assertAlmostEqual(mean_, node0.local_mean)
+        self.assertAlmostEqual(std_, node0.local_st_dev)
+
     def test_restore_short_edges(self):
         # given
         node1 = Node(1, 1, 1)
