@@ -1,7 +1,6 @@
 from scipy.spatial import Delaunay
 import AlgorithmUtils
 from Edge import Edge
-import Painter
 
 
 class Autoclust:
